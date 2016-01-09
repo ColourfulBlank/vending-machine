@@ -1,0 +1,314 @@
+A6 TEST DOCUMENTATION
+=========================
+This program simulates what happens when students using their watcards to buy sodas from
+a number of vending machines, when their parents deposit money into the bank and the watcard
+office transfers money from the bank via couriers, and when the bottling plant manufactures
+sodas and deliver them to the vending machines via a truck.
+
+USER INTERFACE TESTING
+	Note: some of the output is misaligned when copied from terminal onto this document,
+	but they all passed their respective tests.
+
+	TEST1:
+	-------
+		DATA DESCRIPTION
+		This test evaluates the output when given no commandline argument.
+		It should output a simulation using the default config file "soda.config".
+
+		TESTING
+		Here is the log of the testing performed:
+		@ubuntu1204-002% ./soda
+		Parent	Gropoff	WATOff	Names	Truck	Plant	Stud0	Stud1	Mach0	Mach1	Mach2	Cour0	
+		*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	
+		S	S	S	S					S2				
+		D0,3		C0,5	R0	S	S	S3,6	S1,1		S2	S2	S	
+		D0,3		C1,5	R1		G6							
+
+		...
+
+		D1,1												
+		F	...	...	...	...	...	...	...	...	...	...	...	
+		***********************
+		
+		ANALYSIS
+		The output of this test is similar to the output of the given executable in this case.
+		This demonstrates that the created executable behaves correctly in this aspect.
+
+	TEST2:
+	-------
+		DATA DESCRIPTION
+		This test evaluates the output when given the name of a file that doesn't exist.
+		It should output an error message.
+
+		TESTING
+		Here is the log of the testing performed:
+		@ubuntu1204-002% ./soda apple
+		Error: could not open input file "apple"
+
+		ANALYSIS
+		The output of this test is similar to the output of the given executable in this case.
+		This demonstrates that the created executable behaves correctly in this aspect.
+
+	TEST3:
+	-------
+		DATA DESCRIPTION
+		This test evaluates the output when given a negative number for the seed argument.
+		It should output a usage message.
+
+		TESTING
+		Here is the log of the testing performed:
+		@ubuntu1204-002% ./soda custom.config -3
+		Usage: ./soda [ config-file [ random-seed (> 0) ] ]
+
+		ANALYSIS
+		The output of this test is similar to the output of the given executable in this case.
+		This demonstrates that the created executable behaves correctly in this aspect.
+
+	TEST4:
+	-------
+		DATA DESCRIPTION
+		This test evaluates the output when given invalid characters for the seed argument.
+		It should output a usage message.
+
+		TESTING
+		Here is the log of the testing performed:
+		@ubuntu1204-002% ./soda custom.config abcd
+		Usage: ./soda [ config-file [ random-seed (> 0) ] ]
+
+		ANALYSIS
+		The output of this test is similar to the output of the given executable in this case.
+		This demonstrates that the created executable behaves correctly in this aspect.
+
+	TEST5:
+	-------
+		DATA DESCRIPTION
+		This test evaluates the output when given only a correct file name.
+		It should output a simulation using the given config file.
+
+		TESTING
+		Here is the log of the testing performed:
+		@ubuntu1204-002% ./soda custom.config
+		Parent	Gropoff	WATOff	Names	Truck	Plant	Stud0	Stud1	Mach0	Mach1	Mach2	Cour0	
+		*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	
+		S	S	S	S					S2				
+
+		...
+
+		D1,1												
+		F	...	...	...	...	...	...	...	...	...	...	...	
+		***********************
+		
+		ANALYSIS
+		The output of this test is similar to the output of the given executable in this case.
+		This demonstrates that the created executable behaves correctly in this aspect.
+
+	TEST6:
+	-------
+		DATA DESCRIPTION
+		This test evaluates the output when given only a correct file name.
+		It should output a simulation using the given config file.
+
+		TESTING
+		Here is the log of the testing performed:
+		@ubuntu1204-002% ./soda custom.config 5
+		Parent	Gropoff	WATOff	Names	Truck	Plant	Stud0	Stud1	Mach0	Mach1	Mach2	Cour0	
+		*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	*******	
+		S	S	S	S					S2				
+		D1,2		C0,5	R0	S	S	S0,3	S0,5		S2	S2	S	
+
+		...
+
+		D0,3												
+		F	...	...	...	...	...	...	...	...	...	...	...	
+		***********************
+		
+		ANALYSIS
+		The output of this test is similar to the output of the given executable in this case.
+		This demonstrates that the created executable behaves correctly in this aspect.
+
+ALGORITHM TESTING
+	TEST1:
+	-------
+		DATA DESCRIPTION
+		This test demonstrates that the NameServer assigns the VendingMachines to Students
+		in a round-robin fashion, the Students will gain access to all
+		VendingMachines eventually, the order in which the VendingMachines register
+		themselves to the NameServer matches the round-robin assignment of the machines
+		to the Students.
+
+		TESTING
+		Output:
+		 1 Parent  Gropoff WATOff  Names   Truck   Plant   Stud0   Stud1   Mach0   Mach1   Mach2   Cour0
+		 2 ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* *******
+		 3 S       S       S       S                                       S2
+		 4 D1,2            C0,5    R0      S       S       S0,3    S0,5            S2      S2      S
+		 5 D1,3            C1,5    R1              G4
+		 6 D0,1            W       R2      P4      P                                               t0,5
+		 7 D0,2                    N0,0    d0,4            V0              r
+		 8                                 U0,16                           R
+		 9 D0,1                    N1,1    D0,0    G7              V1
+		10 D1,3    D2
+		11 D0,2            W                                                                       T0,5
+		12                                                                                         t1,5
+		13 D0,1                                            B3              B0,0                    T1,5
+		14 D0,2
+		15 D1,2                            P7      P
+		16 D1,3                    N0,1    d1,7            V1                      r
+		17                                 U1,13                                   R
+		18 D1,3    D2                      D1,0    G6                              B0,0
+		19 D1,1                                                    B3
+		20 D1,1                            P6      P
+		21 D1,1                    N0,2    d2,6            V2                              r
+		22                                 U2,14                                           R
+		23 D1,3                            D2,0    G4
+		24 D1,2                                            B1                              B0,0
+		25 D1,2                    N1,2                            V2
+		26 D0,1                    N1,0                            V0
+
+		...
+
+		ANALYSIS
+		Lines 7, 16, 21 demonstrates that Student 0 will gain access to all 3 VendingMachines.
+		Lines 9, 25, 26 demonstrates that Student 1 will gain access to all 3 VendingMachines.
+		Lines 7 and 9 demonstrates that the students started out with different VendingMachines
+		in a round-robin fashion.
+		Lines 4 to 6 demonstrates the order in which the VendingMachines register
+		themselves to the NameServer matches the round-robin assignment of the machines
+		to Students 0 and 1.
+
+	TEST2:
+	-------
+		DATA DESCRIPTION
+		This test demonstrates that the Truck starts delivery to a VendingMachine in a round-robin
+		fashion, the Truck can pick up all sodas produced by BottlingPlant, when the Truck cannot
+		fill a VendingMachine, the Truck will end delivery to a VendingMachine, BottlingPlant can
+		produce a randomized number of sodas, VendingMachines can indicate that a student has
+		bought a soda from it, VendingMachine can indicate that it was loaded by a Truck from start
+		to finish and that during this time no student can buy any soda from the machine.
+
+		TESTING
+		Output:
+		  1 Parent  Gropoff WATOff  Names   Truck   Plant   Stud0   Stud1   Mach0   Mach1   Mach2   Cour0
+		  2 ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* *******
+		  3 S       S       S       S                                       S2
+		  4 D1,2            C0,5    R0      S       S       S0,3    S0,5            S2      S2      S
+		  5 D1,3            C1,5    R1              G4
+		  6 D0,1            W       R2      P4      P                                               t0,5
+		  7 D0,2                    N0,0    d0,4            V0              r
+		  8                                 U0,16                           R
+		  9 D0,1                    N1,1    D0,0    G7              V1
+		 10 D1,3    D2
+		 11 D0,2            W                                                                       T0,5
+		 12                                                                                         t1,5
+		 13 D0,1                                            B3              B0,0                    T1,5
+		 14 D0,2
+		 15 D1,2                            P7      P
+		 16 D1,3                    N0,1    d1,7            V1                      r
+		 17                                 U1,13                                   R
+		 18 D1,3    D2                      D1,0    G6                              B0,0
+		 19 D1,1                                                    B3
+		 20 D1,1                            P6      P
+		 21 D1,1                    N0,2    d2,6            V2                              r
+		 22                                 U2,14                                           R
+		 23 D1,3                            D2,0    G4
+		 24 D1,2                                            B1                              B0,0
+		 25 D1,2                    N1,2                            V2
+		 26 D0,1                    N1,0                            V0
+		 27 D1,1                    N1,1    P4      P               V1
+		 28 D1,1                    N1,2    d0,4                    V2      r
+		 29 D0,3                            U0,13                           R
+		 30 D1,2                    N1,0    D0,0    G10             V0
+		 31 D0,2            T0,7    N1,1                            V1
+
+		...
+
+		ANALYSIS
+		Lines 6 to 30 demonstrates that the Truck delivers sodas to the VendingMachines in a round-robin
+		fashion. Lines 4 and 5 demonstrates that the Truck can pick up all sodas produced by BottlingPlant.
+		Lines 8, 17, 22 demonstrates that sometimes the Truck cannot fill a VendingMachine.
+		Lines 9, 18, 23 demonstrates that the Truck will end delivery to a VendingMachine.
+		Lines 5 and 9 demonstrates that BottlingPlant can produce a randomized number of sodas.
+		Lines 13, 18, and 24 demonstrate that VendingMachines can indicate that a student has
+		bought a soda from it. Lines 7 and 8 demonstrates that VendingMachine can indicate that it
+		was loaded by a Truck from start to finish and that during this time no student can buy
+		any soda from the machine.
+
+	TEST3:
+	-------
+		DATA DESCRIPTION
+		This test demonstrates that Parent can give a randomized amount of money to a random Student,
+		WATCardOffice can create a WATCard and transfer money in a WATCard for a student.
+
+		TESTING
+		Output:
+		1 Parent  Gropoff WATOff  Names   Truck   Plant   Stud0   Stud1   Mach0   Mach1   Mach2   Cour0
+		2 ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* *******
+		3 S       S       S       S                                       S2
+		4 D1,1            C0,5    R0      S       S       S1,1    S1,5            S2      S2      S
+		5 D1,2            C1,5    R1              G10
+
+		...
+
+		36 D0,1
+		37 D0,3                            P7      P
+		38 D1,2            T1,7            d2,7
+
+		...
+
+		ANALYSIS
+		Lines 4, 5, 36, 37, and 38 demonstrates that Parent can give a randomized amount of money
+		to a random Student. Lines 4, 5, and 38 demonstrates that WATCardOffice can create a WATCard
+		and transfer money in a WATCard for a student.
+
+	TEST4:
+	-------
+		DATA DESCRIPTION
+		This test demonstrates that Grouoff only grants one gift card per student, Courier can carry
+		out jobs given by WATCardOffice from start to finish.
+
+		TESTING
+		Output:
+		1 Parent  Gropoff WATOff  Names   Truck   Plant   Stud0   Stud1   Mach0   Mach1   Mach2   Cour0
+		2 ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* *******
+
+		...
+
+		9 D1,1                    N1,1    D0,0    G6              V1
+		10 D0,1    D2
+		11 D1,2
+		12 D0,1                    N1,2                            V2
+		13 D0,1                            P6      P
+		14                 W       N1,0    d1,6                    V0              r               T0,5
+		15                                                                                         t1,5
+		16 D0,3                            U1,14                           B1,1    R               T1,5
+		17 D1,3                            D1,0    G6              G0
+		18                                 P6      P
+		19 D1,1    D2                      d2,6            B3              B1,0            r
+
+		...
+
+		ANALYSIS
+		Lines 270 and 279 demonstrate that Grouoff only grants one gift card per student.
+		Lines 14, 15 and 16 demonstrates that Courier can carry out jobs given by WATCardOffice
+		from start to finish.
+
+	TEST5:
+	-------
+		DATA DESCRIPTION
+		This test demonstrates that a lost WATCard can be correctly indicated.
+
+		TESTING
+		Output:
+		1 Parent  Gropoff WATOff  Names   Truck   Plant   Stud0   Stud1   Mach0   Mach1   Mach2   Cour0
+		2 ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* ******* *******
+
+		...
+
+		20                                 U2,14                                           R
+		21 D0,1            C1,5            D2,0    G5              L
+		22                 W                                                                       t1,5
+
+		...
+
+		ANALYSIS
+		Line 21 demonstrates that a lost WATCard can be correctly indicated.
