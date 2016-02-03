@@ -25,11 +25,11 @@ void Groupoff::main() {
 		_Accept( ~Groupoff ) {
 			break;
 		} _Else {
-			yield( groupoffDelay ); // delay before gift
+			yield( groupoffDelay ); 			// delay before gift
 
-			WATCard *watCard = new WATCard(); // create the gift card
+			WATCard *watCard = new WATCard(); 	// create the gift card
 
-			watCard->deposit( sodaCost ); // deposit the gift
+			watCard->deposit( sodaCost ); 		// deposit the gift
 
 			int i;
 			for ( ; ; ) {
